@@ -1,5 +1,11 @@
-# wp-meta-filter
+# wp-menu-manager
 WordPress Admin Menu Manager
+
+## install
+
+```bash
+composer require wenprise/menu-manager
+```
 
 ## usage
 
