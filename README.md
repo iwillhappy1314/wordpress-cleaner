@@ -1,19 +1,30 @@
 # wp-meta-filter
-Filter data by metadata in wordpress admin post/data list page
+WordPress Admin Menu Manager
 
 ## usage
 
 ````php
-$deals = new Wenprise\MetaFilter\PostFilter();
+$menu_manager = new Wenprise\MenuManager\Cleaner();
 
-$deals->set_post_type('client')
-      ->set_meta_key('_deal_price')
-      ->set_query_var('deal')
-      ->set_header('成交金额大于')
-      ->set_compare('>')
-      ->set_options([
-          0     => '0（已成交）',
-          10000 => '10000 元',
-          20000 => '20000 元',
-      ]);
+$menu_manager->remove_menu([
+    'edit.php',
+    'edit.php?post_type=page',
+    'edit.php?post_type=activity',
+    'edit.php?post_type=comm',
+    'upload.php',
+    'themes.php',
+    'plugins.php',
+    'edit-comments.php',
+    'tools.php',
+    'options-general.php',
+]);
+
+$menu_manager->remove_submenu('index.php', 10)
+             ->remove_submenu('themes.php', [6, 15, 20])
+             ->remove_submenu('options-general.php', [10, 15, 20, 25, 30, 40]);
+
+
+if ( ! current_user_can('administrator')) {
+    $menu_manager->remove_submenu('edit.php?post_type=staff', [15]);
+}
 ````
