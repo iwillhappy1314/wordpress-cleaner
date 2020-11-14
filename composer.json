@@ -1,6 +1,6 @@
 {
   "name": "wenprise/menu-manager",
-  "description": "Filter data by metadata in wordpress admin post/data list page",
+  "description": "WordPress admin menu manager.",
   "type": "library",
   "license": "MIT",
   "minimum-stability": "stable",
