@@ -1,0 +1,15 @@
+{
+  "name": "wenprise/menu-manager",
+  "description": "Filter data by metadata in wordpress admin post/data list page",
+  "type": "library",
+  "license": "MIT",
+  "minimum-stability": "stable",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "Wenprise\\MenuManager\\": "src/"
+    },
+    "files": [
+    ]
+  }
+}
