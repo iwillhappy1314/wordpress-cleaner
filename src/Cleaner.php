@@ -27,7 +27,7 @@ class Cleaner
      */
     public function __construct()
     {
-        add_action('admin_menu', [$this, 'do_remove']);
+        add_action('admin_menu', [$this, 'do_remove'], PHP_INT_MAX);
     }
 
 
