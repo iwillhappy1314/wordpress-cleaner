@@ -1,6 +1,6 @@
 <?php
 
-namespace Wenprise\MenuManager;
+namespace Wenprise;
 
 class Cleaner
 {
