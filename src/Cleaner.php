@@ -7,19 +7,19 @@ class Cleaner
     /**
      * @var array
      */
-    public $to_remove = [];
+    public $menus_to_remove = [];
 
 
     /**
      * @var array
      */
-    public $submenu_to_remove = [];
+    public $submenus_to_remove = [];
 
 
     /**
      * @var array
      */
-    public $metabox_to_remove = [];
+    public $metaboxes_to_remove = [];
 
 
     /**
@@ -38,16 +38,26 @@ class Cleaner
     {
         global $submenu;
 
-        foreach ($this->to_remove as $item) {
+        foreach ($this->menus_to_remove as $item) {
             remove_menu_page($item);
         }
 
-        foreach ($this->submenu_to_remove as $parent => $indexes) {
-            $indexes = (array)$indexes;
+        foreach ($this->submenus_to_remove as $parent => $indexes_or_slug) {
 
-            foreach ($indexes as $index) {
-                unset($submenu[ $parent ][ $index ]);
+            if ( ! is_int($indexes_or_slug) && ! is_array($indexes_or_slug)) {
+                remove_submenu_page($parent, $indexes_or_slug);
+            } else {
+                $indexes = (array)$indexes_or_slug;
+
+                foreach ($indexes as $index) {
+                    unset($submenu[ $parent ][ $index ]);
+                }
             }
+
+        }
+
+        foreach ($this->metaboxes_to_remove as $metabox_to_remove) {
+            remove_meta_box($metabox_to_remove[ 'id' ], $metabox_to_remove[ 'screen' ], $metabox_to_remove[ 'context' ]);
         }
     }
 
@@ -62,9 +72,9 @@ class Cleaner
     function remove_menu($slug)
     {
         if (is_array($slug)) {
-            $this->to_remove = array_merge($this->to_remove, $slug);
+            $this->menus_to_remove = array_merge($this->menus_to_remove, $slug);
         } else {
-            $this->to_remove[] = $slug;
+            $this->menus_to_remove[] = $slug;
         }
 
         return $this;
@@ -81,7 +91,28 @@ class Cleaner
      */
     function remove_submenu($parent, $index)
     {
-        $this->submenu_to_remove[ $parent ] = $index;
+        $this->submenus_to_remove[ $parent ] = $index;
+
+        return $this;
+    }
+
+
+    /**
+     * 移除Metabox
+     *
+     * @param $id
+     * @param $screen
+     * @param $context
+     *
+     * @return $this
+     */
+    function remove_meta_box($id, $screen, $context)
+    {
+        $this->metaboxes_to_remove[] = [
+            'id'      => $id,
+            'screen'  => $screen,
+            'context' => $context,
+        ];
 
         return $this;
     }
