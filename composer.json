@@ -1,6 +1,6 @@
 {
-  "name": "wenprise/menu-manager",
-  "description": "WordPress admin menu manager.",
+  "name": "wenprise/wordpress-cleaner",
+  "description": "WordPress admin ui cleaner.",
   "type": "library",
   "license": "MIT",
   "minimum-stability": "stable",
