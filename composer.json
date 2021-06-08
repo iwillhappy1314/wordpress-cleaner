@@ -7,7 +7,7 @@
   "require": {},
   "autoload": {
     "psr-4": {
-      "Wenprise\\MenuManager\\": "src/"
+      "Wenprise\\": "src/"
     },
     "files": [
     ]
