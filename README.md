@@ -4,7 +4,7 @@ WordPress Admin Menu Manager
 ## install
 
 ```bash
-composer require wenprise/menu-manager
+composer require wenprise/wordpress-cleaner
 ```
 
 ## usage
@@ -28,7 +28,8 @@ $menu_manager->remove_menu([
 $menu_manager->remove_submenu('index.php', 10)
              ->remove_submenu('themes.php', [6, 15, 20])
              ->remove_submenu('options-general.php', [10, 15, 20, 25, 30, 40]);
-
+                          
+$menu_manager->remove_meta_box('commentsdiv', 'post', 'side');
 
 if ( ! current_user_can('administrator')) {
     $menu_manager->remove_submenu('edit.php?post_type=staff', [15]);
