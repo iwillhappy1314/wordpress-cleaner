@@ -10,7 +10,7 @@ composer require wenprise/wordpress-cleaner
 ## usage
 
 ````php
-$menu_manager = new Wenprise\MenuManager\Cleaner();
+$menu_manager = new Wenprise\Cleaner();
 
 $menu_manager->remove_menu([
     'edit.php',
