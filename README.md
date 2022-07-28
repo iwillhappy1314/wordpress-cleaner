@@ -27,6 +27,7 @@ $menu_manager->remove_menu([
 
 $menu_manager->remove_submenu('index.php', 10)
              ->remove_submenu('themes.php', [6, 15, 20])
+             ->remove_submenu('woocommerce', 'report')
              ->remove_submenu('options-general.php', [10, 15, 20, 25, 30, 40]);
                           
 $menu_manager->remove_meta_box('commentsdiv', 'post', 'side');
