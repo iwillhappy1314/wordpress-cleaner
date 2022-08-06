@@ -7,6 +7,11 @@ class Cleaner
     /**
      * @var array
      */
+    public $dashboard_wdigets = [];
+    
+    /**
+     * @var array
+     */
     public $menus_to_remove = [];
 
 
@@ -28,6 +33,7 @@ class Cleaner
     public function __construct()
     {
         add_action('admin_menu', [$this, 'do_remove'], PHP_INT_MAX);
+        add_action('wp_dashboard_setup', [$this, 'remove_dashboard_widgets'] );
     }
 
 
@@ -59,6 +65,10 @@ class Cleaner
         foreach ($this->metaboxes_to_remove as $metabox_to_remove) {
             remove_meta_box($metabox_to_remove[ 'id' ], $metabox_to_remove[ 'screen' ], $metabox_to_remove[ 'context' ]);
         }
+    }
+    
+    
+    function remove_dashboard_widgets(){
     }
 
 
@@ -119,9 +129,10 @@ class Cleaner
     
     
     function remove_dashboard_widget($widget_id){
+        $this->metaboxes_to_remove[]  = $widget_id;
         
+        return $this;
     }
-    
     
     function search_keys_path_by_value($search_value, $array, $id_path) {
   
