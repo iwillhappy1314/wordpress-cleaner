@@ -38,7 +38,8 @@ $cleaner->remove_submenu('index.php', 10)
 $cleaner->remove_meta_box('commentsdiv', 'post', 'side');
 
 //Remove Dashboard widget
-$cleaner->remove_meta_box('dashboard_primary', 'dashboard', 'normal');
+$cleaner->remove_meta_box('dashboard_primary', 'dashboard', 'normal')
+        ->remove_meta_box('e-dashboard-overview', 'dashboard', 'normal');
 
 //Remove admin bar links
 $cleaner->remove_admin_bar_menu('wp-logo');
