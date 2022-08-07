@@ -1,6 +1,6 @@
 # wp-menu-manager
 
-WordPress Admin Menu Manager
+WordPress Element Cleaner
 
 ## install
 
@@ -11,10 +11,10 @@ composer require wenprise/wordpress-cleaner
 ## usage
 
 ````php
-$menu_manager = new Wenprise\Cleaner();
+$cleaner = new Wenprise\Cleaner();
 
 //Remove top level menu
-$menu_manager->remove_menu([
+$cleaner->remove_menu([
     'edit.php',
     'edit.php?post_type=page',
     'edit.php?post_type=activity',
@@ -27,18 +27,24 @@ $menu_manager->remove_menu([
     'options-general.php',
 ]);
 
-$menu_manager->remove_submenu('index.php', 10)
+$cleaner->remove_submenu('index.php', 10)
              ->remove_submenu('themes.php', [6, 15, 20])
              ->remove_submenu('woocommerce', 'report')
+             ->remove_submenu('elementor', 'go_elementor_pro')
+             ->remove_submenu('elementor', 'go_knowledge_base_site')
              ->remove_submenu('options-general.php', [10, 15, 20, 25, 30, 40]);
 
 //Remove post metabox
-$menu_manager->remove_meta_box('commentsdiv', 'post', 'side');
+$cleaner->remove_meta_box('commentsdiv', 'post', 'side');
 
 //Remove Dashboard widget
-$menu_manager->remove_dashboard_widget('dashboard_primary');
+$cleaner->remove_dashboard_widget('dashboard_primary');
+$cleaner->remove_dashboard_widget('dashboard_site_health');
+
+//Remove admin bar links
+$cleaner->remove_admin_bar_menu('wp-logo');
 
 if ( ! current_user_can('administrator')) {
-    $menu_manager->remove_submenu('edit.php?post_type=staff', [15]);
+    $cleaner->remove_submenu('edit.php?post_type=staff', [15]);
 }
 ````

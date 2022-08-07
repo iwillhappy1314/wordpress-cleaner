@@ -4,10 +4,6 @@ namespace Wenprise;
 
 class Cleaner
 {
-    /**
-     * @var array
-     */
-    public $dashboard_widgets_to_remove = [];
 
     /**
      * @var array
@@ -28,19 +24,32 @@ class Cleaner
 
 
     /**
+     * @var array
+     */
+    public $dashboard_widgets_to_remove = [];
+
+
+    /**
+     * @var array
+     */
+    public $admin_bar_menu_to_remove = [];
+
+
+    /**
      * AdminMenuManager constructor.
      */
     public function __construct()
     {
         add_action('admin_menu', [$this, 'do_remove'], PHP_INT_MAX);
         add_action('wp_dashboard_setup', [$this, 'remove_dashboard_widgets']);
+        add_action('wp_before_admin_bar_render', [$this, 'remove_admin_bar_links']);
     }
 
 
     /**
      * 执行移除操作
      */
-    public function do_remove()
+    function do_remove()
     {
         global $submenu;
 
@@ -48,18 +57,19 @@ class Cleaner
             remove_menu_page($item);
         }
 
-        foreach ($this->submenus_to_remove as $parent => $indexes_or_slug) {
+        foreach ($this->submenus_to_remove as $parent => $indexes_or_slugs) {
 
-            if ( ! is_int($indexes_or_slug) && ! is_array($indexes_or_slug)) {
-                remove_submenu_page($parent, $indexes_or_slug);
-            } else {
-                $indexes = (array)$indexes_or_slug;
+            foreach ($indexes_or_slugs as $index_or_slug) {
+                if ( ! is_int($index_or_slug) && ! is_array($index_or_slug)) {
+                    remove_submenu_page($parent, $index_or_slug);
+                } else {
+                    $indexes = (array)$index_or_slug;
 
-                foreach ($indexes as $index) {
-                    unset($submenu[ $parent ][ $index ]);
+                    foreach ($indexes as $index) {
+                        unset($submenu[ $parent ][ $index ]);
+                    }
                 }
             }
-
         }
 
         foreach ($this->metaboxes_to_remove as $metabox_to_remove) {
@@ -92,13 +102,28 @@ class Cleaner
 
 
     /**
+     * 执行移除管理工具条链接操作
+     *
+     * @return void
+     */
+    function remove_admin_bar_links()
+    {
+        global $wp_admin_bar;
+
+        foreach ($this->admin_bar_menu_to_remove as $item) {
+            $wp_admin_bar->remove_menu($item);
+        }
+    }
+
+
+    /**
      * 移除顶级菜单
      *
      * @param string|array $slug
      *
      * @return $this
      */
-    function remove_menu($slug): Cleaner
+    public function remove_menu($slug): Cleaner
     {
         if (is_array($slug)) {
             $this->menus_to_remove = array_merge($this->menus_to_remove, $slug);
@@ -118,9 +143,9 @@ class Cleaner
      *
      * @return $this
      */
-    function remove_submenu($parent, $index): Cleaner
+    public function remove_submenu($parent, $index): Cleaner
     {
-        $this->submenus_to_remove[ $parent ] = $index;
+        $this->submenus_to_remove[ $parent ][] = $index;
 
         return $this;
     }
@@ -135,7 +160,7 @@ class Cleaner
      *
      * @return $this
      */
-    function remove_meta_box($id, $screen, $context): Cleaner
+    public function remove_meta_box($id, $screen, $context): Cleaner
     {
         $this->metaboxes_to_remove[] = [
             'id'      => $id,
@@ -148,13 +173,30 @@ class Cleaner
 
 
     /**
+     * 移除仪表盘小工具
+     *
      * @param $widget_id
      *
      * @return $this
      */
-    function remove_dashboard_widget($widget_id): Cleaner
+    public function remove_dashboard_widget($widget_id): Cleaner
     {
         $this->dashboard_widgets_to_remove[] = $widget_id;
+
+        return $this;
+    }
+
+
+    /**
+     * 移除管理工具条菜单
+     *
+     * @param $menu_id
+     *
+     * @return $this
+     */
+    public function remove_admin_bar_menu($menu_id): Cleaner
+    {
+        $this->admin_bar_menu_to_remove[] = $menu_id;
 
         return $this;
     }
@@ -167,7 +209,7 @@ class Cleaner
      *
      * @return array
      */
-    function search_keys_path_by_value($array, $search_key, $carry = null): array
+    private function search_keys_path_by_value($array, $search_key, $carry = null): array
     {
 
         $fullKeys = []; //that's the initial array we'll be returning
