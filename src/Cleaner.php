@@ -7,8 +7,8 @@ class Cleaner
     /**
      * @var array
      */
-    public $dashboard_wdigets = [];
-    
+    public $dashboard_widgets_to_remove = [];
+
     /**
      * @var array
      */
@@ -33,7 +33,7 @@ class Cleaner
     public function __construct()
     {
         add_action('admin_menu', [$this, 'do_remove'], PHP_INT_MAX);
-        add_action('wp_dashboard_setup', [$this, 'remove_dashboard_widgets'] );
+        add_action('wp_dashboard_setup', [$this, 'remove_dashboard_widgets']);
     }
 
 
@@ -66,9 +66,28 @@ class Cleaner
             remove_meta_box($metabox_to_remove[ 'id' ], $metabox_to_remove[ 'screen' ], $metabox_to_remove[ 'context' ]);
         }
     }
-    
-    
-    function remove_dashboard_widgets(){
+
+
+    /**
+     * 执行移除仪表盘小工具操作
+     *
+     * @return $this
+     */
+    function remove_dashboard_widgets(): Cleaner
+    {
+        global $wp_meta_boxes;
+
+        foreach ($this->dashboard_widgets_to_remove as $item) {
+            $paths = $this->search_keys_path_by_value($wp_meta_boxes, $item);
+
+            foreach ($paths as $path) {
+                $keys = explode('.', $path);
+                unset($wp_meta_boxes[ $keys[ 0 ] ]     [ $keys[ 1 ] ]   [ $keys[ 2 ] ]   [ $keys[ 3 ] ]);
+            }
+        }
+
+        return $this;
+
     }
 
 
@@ -79,7 +98,7 @@ class Cleaner
      *
      * @return $this
      */
-    function remove_menu($slug)
+    function remove_menu($slug): Cleaner
     {
         if (is_array($slug)) {
             $this->menus_to_remove = array_merge($this->menus_to_remove, $slug);
@@ -99,7 +118,7 @@ class Cleaner
      *
      * @return $this
      */
-    function remove_submenu($parent, $index)
+    function remove_submenu($parent, $index): Cleaner
     {
         $this->submenus_to_remove[ $parent ] = $index;
 
@@ -116,7 +135,7 @@ class Cleaner
      *
      * @return $this
      */
-    function remove_meta_box($id, $screen, $context)
+    function remove_meta_box($id, $screen, $context): Cleaner
     {
         $this->metaboxes_to_remove[] = [
             'id'      => $id,
@@ -126,46 +145,46 @@ class Cleaner
 
         return $this;
     }
-    
-    
-    function remove_dashboard_widget($widget_id){
-        $this->metaboxes_to_remove[]  = $widget_id;
-        
+
+
+    /**
+     * @param $widget_id
+     *
+     * @return $this
+     */
+    function remove_dashboard_widget($widget_id): Cleaner
+    {
+        $this->dashboard_widgets_to_remove[] = $widget_id;
+
         return $this;
     }
-    
-    function search_keys_path_by_value($search_value, $array, $id_path) {
-  
-        // Iterating over main array
-        foreach ($array as $key1 => $val1) {
 
-            $temp_path = $id_path;
 
-            // Adding current key to search path
-            array_push($temp_path, $key1);
+    /**
+     * @param $array
+     * @param $search_key
+     * @param $carry
+     *
+     * @return array
+     */
+    function search_keys_path_by_value($array, $search_key, $carry = null): array
+    {
 
-            // Check if this value is an array
-            // with atleast one element
-            if(is_array($val1) and count($val1)) {
-
-                // Iterating over the nested array
-                foreach ($val1 as $key2 => $val2) {
-
-                    if($val2 == $search_value) {
-
-                        // Adding current key to search path
-                        array_push($temp_path, $key2);
-
-                        return join(" --> ", $temp_path);
-                    }
-                }
-            }
-
-            elseif($val1 == $search_value) {
-                return join(" --> ", $temp_path);
+        $fullKeys = []; //that's the initial array we'll be returning
+        foreach ($array as $key => $val) //begin looping first level of array
+        {
+            //if that's our desired key, add it to the carry (in case it's present) and save in te array
+            if ($key == $search_key) {
+                $fullKeys[] = $carry ? "$carry.$key" : $key;
+            } elseif (is_array($val)) {
+                //else we'll do recursion
+                //our function returns an array, so we'll merge the results with the results previously gathered in our $fullKeys array
+                //our new array to search is the $val array, so we put that in
+                //if we had a carry as the key from a previous iteration, just concat it with the current key (add a dot if needed) and that's our new carry!
+                $fullKeys = array_merge($fullKeys, $this->search_keys_path_by_value($val, $search_key, $carry ? "$carry.$key" : $key));
             }
         }
 
-        return null;
+        return $fullKeys;
     }
 }

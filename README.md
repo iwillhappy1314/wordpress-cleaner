@@ -1,4 +1,5 @@
 # wp-menu-manager
+
 WordPress Admin Menu Manager
 
 ## install
@@ -12,6 +13,7 @@ composer require wenprise/wordpress-cleaner
 ````php
 $menu_manager = new Wenprise\Cleaner();
 
+//Remove top level menu
 $menu_manager->remove_menu([
     'edit.php',
     'edit.php?post_type=page',
@@ -29,8 +31,12 @@ $menu_manager->remove_submenu('index.php', 10)
              ->remove_submenu('themes.php', [6, 15, 20])
              ->remove_submenu('woocommerce', 'report')
              ->remove_submenu('options-general.php', [10, 15, 20, 25, 30, 40]);
-                          
+
+//Remove post metabox
 $menu_manager->remove_meta_box('commentsdiv', 'post', 'side');
+
+//Remove Dashboard widget
+$menu_manager->remove_dashboard_widget('dashboard_primary');
 
 if ( ! current_user_can('administrator')) {
     $menu_manager->remove_submenu('edit.php?post_type=staff', [15]);
