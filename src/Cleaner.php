@@ -24,6 +24,8 @@ class Cleaner
 
 
     /**
+     * @todo: 确定是否保留此方法，remove metabox 的方法也可以用来移除仪表盘小工具
+     *
      * @var array
      */
     public $dashboard_widgets_to_remove = [];
