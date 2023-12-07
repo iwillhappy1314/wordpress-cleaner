@@ -47,4 +47,7 @@ $cleaner->remove_admin_bar_menu('wp-logo');
 if ( ! current_user_can('administrator')) {
     $cleaner->remove_submenu('edit.php?post_type=staff', [15]);
 }
+
+// Remove webcome panel
+$cleaner->remove_welcome_panel();
 ````
