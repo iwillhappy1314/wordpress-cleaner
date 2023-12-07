@@ -8,113 +8,41 @@ class Cleaner
     /**
      * @var array
      */
-    public $menus_to_remove = [];
+    private $menus_to_remove = [];
 
 
     /**
      * @var array
      */
-    public $submenus_to_remove = [];
+    private $submenus_to_remove = [];
 
 
     /**
      * @var array
      */
-    public $metaboxes_to_remove = [];
-
-
-    /**
-     * @todo: 确定是否保留此方法，remove metabox 的方法也可以用来移除仪表盘小工具
-     *
-     * @var array
-     */
-    public $dashboard_widgets_to_remove = [];
+    private $metaboxes_to_remove = [];
 
 
     /**
      * @var array
      */
-    public $admin_bar_menu_to_remove = [];
+    private $dashboard_widgets_to_remove = [];
 
 
     /**
-     * AdminMenuManager constructor.
+     * @var array
+     */
+    private $admin_bar_menu_to_remove = [];
+
+
+    /**
+     * Cleaner constructor.
      */
     public function __construct()
     {
-        add_action('admin_menu', [$this, 'do_remove'], PHP_INT_MAX);
-        add_action('wp_dashboard_setup', [$this, 'remove_dashboard_widgets']);
-        add_action('wp_before_admin_bar_render', [$this, 'remove_admin_bar_links']);
-    }
-
-
-    /**
-     * 执行移除操作
-     */
-    function do_remove()
-    {
-        global $submenu;
-
-        foreach ($this->menus_to_remove as $item) {
-            remove_menu_page($item);
-        }
-
-        foreach ($this->submenus_to_remove as $parent => $indexes_or_slugs) {
-
-            foreach ($indexes_or_slugs as $index_or_slug) {
-                if ( ! is_int($index_or_slug) && ! is_array($index_or_slug)) {
-                    remove_submenu_page($parent, $index_or_slug);
-                } else {
-                    $indexes = (array)$index_or_slug;
-
-                    foreach ($indexes as $index) {
-                        unset($submenu[ $parent ][ $index ]);
-                    }
-                }
-            }
-        }
-
-        foreach ($this->metaboxes_to_remove as $metabox_to_remove) {
-            remove_meta_box($metabox_to_remove[ 'id' ], $metabox_to_remove[ 'screen' ], $metabox_to_remove[ 'context' ]);
-        }
-    }
-
-
-    /**
-     * 执行移除仪表盘小工具操作
-     *
-     * @return $this
-     */
-    function remove_dashboard_widgets(): Cleaner
-    {
-        global $wp_meta_boxes;
-
-        foreach ($this->dashboard_widgets_to_remove as $item) {
-            $paths = $this->search_keys_path_by_value($wp_meta_boxes, $item);
-
-            foreach ($paths as $path) {
-                $keys = explode('.', $path);
-                unset($wp_meta_boxes[ $keys[ 0 ] ]     [ $keys[ 1 ] ]   [ $keys[ 2 ] ]   [ $keys[ 3 ] ]);
-            }
-        }
-
-        return $this;
-
-    }
-
-
-    /**
-     * 执行移除管理工具条链接操作
-     *
-     * @return void
-     */
-    function remove_admin_bar_links()
-    {
-        global $wp_admin_bar;
-
-        foreach ($this->admin_bar_menu_to_remove as $item) {
-            $wp_admin_bar->remove_menu($item);
-        }
+        add_action('admin_menu', [$this, 'do_remove_menus_metaboxes'], PHP_INT_MAX);
+        add_action('wp_dashboard_setup', [$this, 'do_remove_dashboard_widgets']);
+        add_action('wp_before_admin_bar_render', [$this, 'do_remove_admin_bar_links']);
     }
 
 
@@ -201,6 +129,76 @@ class Cleaner
         $this->admin_bar_menu_to_remove[] = $menu_id;
 
         return $this;
+    }
+
+
+    /**
+     * 执行移除操作
+     */
+    function do_remove_menus_metaboxes()
+    {
+        global $submenu;
+
+        foreach ($this->menus_to_remove as $item) {
+            remove_menu_page($item);
+        }
+
+        foreach ($this->submenus_to_remove as $parent => $indexes_or_slugs) {
+
+            foreach ($indexes_or_slugs as $index_or_slug) {
+                if ( ! is_int($index_or_slug) && ! is_array($index_or_slug)) {
+                    remove_submenu_page($parent, $index_or_slug);
+                } else {
+                    $indexes = (array)$index_or_slug;
+
+                    foreach ($indexes as $index) {
+                        unset($submenu[ $parent ][ $index ]);
+                    }
+                }
+            }
+        }
+
+        foreach ($this->metaboxes_to_remove as $metabox_to_remove) {
+            remove_meta_box($metabox_to_remove[ 'id' ], $metabox_to_remove[ 'screen' ], $metabox_to_remove[ 'context' ]);
+        }
+    }
+
+
+    /**
+     * 执行移除仪表盘小工具操作
+     *
+     * @return $this
+     */
+    function do_remove_dashboard_widgets(): Cleaner
+    {
+        global $wp_meta_boxes;
+
+        foreach ($this->dashboard_widgets_to_remove as $item) {
+            $paths = $this->search_keys_path_by_value($wp_meta_boxes, $item);
+
+            foreach ($paths as $path) {
+                $keys = explode('.', $path);
+                unset($wp_meta_boxes[ $keys[ 0 ] ]     [ $keys[ 1 ] ]   [ $keys[ 2 ] ]   [ $keys[ 3 ] ]);
+            }
+        }
+
+        return $this;
+
+    }
+
+
+    /**
+     * 执行移除管理工具条链接操作
+     *
+     * @return void
+     */
+    function do_remove_admin_bar_links()
+    {
+        global $wp_admin_bar;
+
+        foreach ($this->admin_bar_menu_to_remove as $item) {
+            $wp_admin_bar->remove_menu($item);
+        }
     }
 
 
